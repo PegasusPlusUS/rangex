@@ -1,13 +1,9 @@
 #pragma once
 
-//#include <iostream>
-
-// #include <ranges>
-// #include <type_traits>
-// #include <cstdint>
 #include "cstdtype_helper.h"
+using namespace ns_type_helper;
 
-//namespace ns_rangex {
+namespace ns_rangex {
 
 /// 2 use cases:
 /// for(auto v : rangex<uint8_t>(start, end, step, inclusive)) {
@@ -122,4 +118,4 @@ protected:
     signed_step_type_t step; 
 };
 
-//} // namespace ns_rangex
+} // namespace ns_rangex
