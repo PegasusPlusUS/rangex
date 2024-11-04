@@ -34,3 +34,6 @@
 external/
 external
 .build/
+out/
+.vs/
+.vscode/

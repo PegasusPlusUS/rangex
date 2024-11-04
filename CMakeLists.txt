@@ -1,5 +1,5 @@
 # Set the minimum version of CMake required
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 3.20)
 
 # Set the project name and version
 project(rangex_test VERSION 0.3 LANGUAGES CXX)

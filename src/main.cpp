@@ -193,13 +193,13 @@ TEST_CASE_EX(rangex_test, inclusive_range_downward_of_uint8_t_explicitly_no_inde
     //std::cout << std::endl;
 }
 
-TEST_CASE_EX(rangex_test, inclusive_range_downward_of_float128_t_explicitly_no_index_explicitly) {
+TEST_CASE_EX(rangex_test, inclusive_range_downward_of_float64_t_explicitly_no_index_explicitly) {
     // int inclusive step -1
     // get 5...1 by -1
 
-    using element_type_t = std::float128_t;
-    element_type_t expect[] = {scf<128>(5.0f), scf<128>(4.0f), scf<128>(3.0f), scf<128>(2.0f), scf<128>(1.0f)};
-    verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<128>(5.0f), scf<128>(1.0f), true, scf<128>(-1.0f)));
+    using element_type_t = std::float64_t;
+    element_type_t expect[] = {scf<64>(5.0f), scf<64>(4.0f), scf<64>(3.0f), scf<64>(2.0f), scf<64>(1.0f)};
+    verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<64>(5.0f), scf<64>(1.0f), true, scf<64>(-1.0f)));
 }
 
 TEST_CASE_EX(rangex_test, inclusive_indexed_range_downward_of_typename_uint8_t) {
@@ -286,6 +286,13 @@ TEST_CASE_EX(rangex_test, step_gt_1_and_how_to_though_end_not_just_stepped) {
     //std::cout << std::endl;    
 }
 
+TEST_CASE_EX(rangex_test, step_gt_1_and_how_to_though_end_not_just_stepped_for_float) {
+    using element_type_t = std::float32_t;
+    //element_type_t expect[] = {scf<32>(5.0f), scf<32>(3.0f), scf<32>(1.0f)};
+    element_type_t expect[] = {scf<32>(1.0f), scf<32>(4.0f), scf<32>(7.0f)};
+    verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<32>(1.0f), scf<32>(9.0f), false, scf<32>(3.0f)));
+    verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<32>(1.0f), scf<32>(9.0f), true, scf<32>(3.0f)));
+}
 // if from <= to/through and step < 0, for loop will do nothing
 // if from >= to/through and step > 0, for loop will do nothing
 // if step == 0, Swift will panic. Should throw div by 0 exception or infinity loop?

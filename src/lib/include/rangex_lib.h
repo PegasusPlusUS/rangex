@@ -79,6 +79,7 @@ using signed_step_type_t = make_signed_custom_t<T>;
         : start(start_)
         //, _end(end)
         , step(step_) {
+            std::cout << start_ << " " << end_ << " " << step << " " << std::endl;
         if ((start_ <= end_ && step_ < 0)
             || (start_ >= end_ && step_ > 0)
            ) {
@@ -91,11 +92,12 @@ using signed_step_type_t = make_signed_custom_t<T>;
         else {
             // Calculate padding based on step direction
             T rangex_size = end_ - start;
-            T num_steps = rangex_size / step;
+            T num_steps;
+            bool exactly_on_step = std_div_exact(rangex_size, step, num_steps);
+            std::cout << rangex_size << " " << num_steps << " " << exactly_on_step << " " << inclusive << std::endl;
 
             // Align `end` based on last multiple of `step` in rangex
             this->_end = start + (num_steps * step);
-            bool exactly_on_step = (0 == std_mod(rangex_size, step));
             if (!exactly_on_step) {
                 this->_end += step;
             }
@@ -103,6 +105,7 @@ using signed_step_type_t = make_signed_custom_t<T>;
             if (inclusive && exactly_on_step) {
                 this->_end += step;
             }
+            std::cout << start << " " << _end << " " << step << " " << exactly_on_step << std::endl;
         }
     };
     // Begin method for rangex-based for loop

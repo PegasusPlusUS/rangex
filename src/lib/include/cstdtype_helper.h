@@ -169,19 +169,22 @@ constexpr bool check_eq_typeof() {
 // compile time choose % or std::fmod
 // Template function to perform modulus operation
 template<typename T>
-constexpr auto std_mod(T a, make_signed_custom_t<T> b) -> make_signed_custom_t<T> {
+constexpr auto std_div_exact(T a, make_signed_custom_t<T> b, T &q) -> bool {
     if constexpr (std::is_integral_v<T>) {
-        return a % b; // Use % for integer types
+        q = a / b;
+        return 0 == a % b; // Use % for integer types
     } else if constexpr (std::is_floating_point_v<T>) {
-        return std::fmod(a, b); // Use std::fmod for floating-point types
+        q = static_cast<int>(std::floor(a / b));
+        return 100 * std::abs(std::fmod(a, b)) < 1; // Use std::fmod for floating-point types
     } else {
         static_assert(std::is_integral_v<T> || std::is_floating_point_v<T>, "Unsupported type");
     }
 }
 
 // Only unsigned char, signed char need special care
-constexpr auto std_mod(uint8_t a, int8_t b) -> int8_t {
-    return a % b;
+constexpr auto std_div_exact(uint8_t a, int8_t b, uint8_t &q) -> bool {
+    q = a / b;
+    return 0 == a % b;
 }
 
 } // ns_type_helper;
