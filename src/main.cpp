@@ -22,11 +22,31 @@ TEST_CASE_EX(rangex_test, default_exclusive_range_of_int) {
         sum += v;
         CHECK(index < sizeof(expect)/sizeof(expect[0]));
         CHECK(v == expect[index++]);
-        std::cout << v << " ";
+        //std::cout << v << " ";
     }
     CHECK_EQ(index, sizeof(expect)/sizeof(expect[0]));
     CHECK_EQ(sum, 1 + 2 + 3 + 4 + 5);
-    std::cout << std::endl;
+    //std::cout << std::endl;
+}
+
+TEST_CASE_EX(rangex_test, default_exclusive_range_of_float) {
+    // default rangex<int, false> as normal exclusive loop at step 1
+    // get 1...5
+
+    using element_type_t = std::float16_t;
+    element_type_t sum = scf<16>(0.0f);
+    element_type_t expect[] = {scf<16>(1.0f), scf<16>(2.0f), scf<16>(3.0f), scf<16>(4.0f), scf<16>(5.0f)};
+    size_t index = 0;
+    for(auto v : rangex<element_type_t, false>(scf<16>(1.0f), scf<16>(6.0f))) {
+        static_assert(check_eq_typeof<decltype(v), element_type_t>());
+        sum += v;
+        CHECK(index < sizeof(expect)/sizeof(expect[0]));
+        CHECK(v == expect[index++]);
+        //std::cout << v << " ";
+    }
+    CHECK_EQ(index, sizeof(expect)/sizeof(expect[0]));
+    CHECK_EQ(sum, scf<16>(1.0f) + scf<16>(2.0f) + scf<16>(3.0) + scf<16>(4.0) + scf<16>(5.0));
+    //std::cout << std::endl;
 }
 
 TEST_CASE_EX(rangex_test, inclusive_range_of_int) {
@@ -42,11 +62,31 @@ TEST_CASE_EX(rangex_test, inclusive_range_of_int) {
         sum += v;
         CHECK(index < 5);
         CHECK(v == expect[index++]);
-        std::cout << v << " ";
+        //std::cout << v << " ";
     }
     CHECK(index == 5);
     CHECK(sum == 1 + 2 + 3 + 4 + 5);
-    std::cout << std::endl;
+    //std::cout << std::endl;
+}
+
+TEST_CASE_EX(rangex_test, inclusive_range_of_float) {
+    // float inclusive step 1
+    // get 1...5
+
+    using element_type_t = std::float16_t;
+    element_type_t sum = scf<16>(0.0f);
+    element_type_t expect[] = {scf<16>(1.0f), scf<16>(2.0f), scf<16>(3.0f), scf<16>(4.0f), scf<16>(5.0f)};
+    size_t index = 0;
+    for(auto v : rangex<element_type_t, false>(scf<16>(1), scf<16>(5), true)) {
+        static_assert(check_eq_typeof<decltype(v), element_type_t>());
+        sum += v;
+        CHECK(index < 5);
+        CHECK(v == expect[index++]);
+        //std::cout << v << " ";
+    }
+    CHECK(index == 5);
+    CHECK(sum == scf<16>(1.0f) + scf<16>(2.0f) + scf<16>(3.0f) + scf<16>(4.0f) + scf<16>(5.0f));
+    //std::cout << std::endl;
 }
 
 TEST_CASE_EX(rangex_test, inclusive_range_downward_of_int_default) {
@@ -62,14 +102,50 @@ TEST_CASE_EX(rangex_test, inclusive_range_downward_of_int_default) {
         sum += v;
         CHECK(index < 5);
         CHECK(v == expect[index++]);
-        std::cout << v << " ";
+        //std::cout << v << " ";
     }
     CHECK(index == 5);
     CHECK(sum == 5 + 4 + 3 + 2 + 1);
-    std::cout << std::endl;
+    //std::cout << std::endl;
 }
 
-TEST_CASE_EX(rangex_test, inclusive_range_downward_of_int_explicitly_) {
+template <typename T>
+void verify_for_loop_range(T expect[], size_t expect_len, rangex<T, false> r) {
+    T sum = 0;
+    size_t index = 0;
+    for(auto v : r) {
+        static_assert(check_eq_typeof<decltype(v), T>());
+        sum += v;
+        CHECK(index < expect_len);
+        CHECK(v == expect[index++]);
+    }
+    CHECK(index == expect_len);
+}
+
+template <typename T>
+void verify_for_loop_indexed_range(T expect[], size_t expect_len, rangex<T, true> r) {
+    T sum = 0;
+    size_t index = 0;
+    for(auto iv : r) {
+        static_assert(check_eq_typeof<decltype(iv.second), T>());
+        static_assert(check_eq_typeof<decltype(iv.first), size_t>());
+        sum += iv.second;
+        CHECK(index == iv.first);
+        CHECK(index < expect_len);
+        CHECK(iv.second == expect[index++]);
+    }
+    CHECK(index == expect_len);
+}
+
+TEST_CASE_EX(rangex_test, inclusive_range_downward_of_float_default) {
+    // float inclusive step -1
+    // get 5...1 by -1
+    using element_type_t = std::float16_t;
+    element_type_t expect[] = {scf<16>(5.0f), scf<16>(4.0f), scf<16>(3.0f), scf<16>(2.0f), scf<16>(1.0f)};
+    verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<16>(5.0f), scf<16>(1.0f), true, scf<16>(-1.0f)));
+}
+
+TEST_CASE_EX(rangex_test, inclusive_range_downward_of_int_explicitly) {
     // int inclusive step -1
     // get 5...1 by -1
 
@@ -82,11 +158,19 @@ TEST_CASE_EX(rangex_test, inclusive_range_downward_of_int_explicitly_) {
         sum += v;
         CHECK(index < 5);
         CHECK(v == expect[index++]);
-        std::cout << v << " ";
+        //std::cout << v << " ";
     }
     CHECK(index == 5);
     CHECK(sum == 5 + 4 + 3 + 2 + 1);
-    std::cout << std::endl;
+    //std::cout << std::endl;
+}
+
+TEST_CASE_EX(rangex_test, inclusive_range_downward_of_float_explicitly) {
+    // float inclusive step -1
+    // get 5...1 by -1
+    using element_type_t = std::float16_t;
+    element_type_t expect[] = {scf<16>(5.0f), scf<16>(4.0f), scf<16>(3.0f), scf<16>(2.0f), scf<16>(1.0f)};
+    verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<16>(5.0f), scf<16>(1.0f), true, scf<16>(-1.0f)));
 }
 
 TEST_CASE_EX(rangex_test, inclusive_range_downward_of_uint8_t_explicitly_no_index_explicitly) {
@@ -102,11 +186,20 @@ TEST_CASE_EX(rangex_test, inclusive_range_downward_of_uint8_t_explicitly_no_inde
         sum += v;
         CHECK(index < 5);
         CHECK(v == expect[index++]);
-        std::cout << v << " ";
+        //std::cout << v << " ";
     }
     CHECK(index == 5);
     CHECK(sum == 5 + 4 + 3 + 2 + 1);
-    std::cout << std::endl;
+    //std::cout << std::endl;
+}
+
+TEST_CASE_EX(rangex_test, inclusive_range_downward_of_float128_t_explicitly_no_index_explicitly) {
+    // int inclusive step -1
+    // get 5...1 by -1
+
+    using element_type_t = std::float128_t;
+    element_type_t expect[] = {scf<128>(5.0f), scf<128>(4.0f), scf<128>(3.0f), scf<128>(2.0f), scf<128>(1.0f)};
+    verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<128>(5.0f), scf<128>(1.0f), true, scf<128>(-1.0f)));
 }
 
 TEST_CASE_EX(rangex_test, inclusive_indexed_range_downward_of_typename_uint8_t) {
@@ -126,11 +219,20 @@ TEST_CASE_EX(rangex_test, inclusive_indexed_range_downward_of_typename_uint8_t) 
         CHECK(auto_index == index);
         CHECK(index < sizeof(expect)/sizeof(expect[0]));
         CHECK(v == expect[index++]);
-        std::cout << v << " ";
+        //std::cout << v << " ";
     }
     CHECK(index == sizeof(expect)/sizeof(expect[0]));
     CHECK(sum == 5 + 4 + 3 + 2 + 1 + 0);
-    std::cout << std::endl;
+    //std::cout << std::endl;
+}
+
+TEST_CASE_EX(rangex_test, inclusive_indexed_range_downward_of_typename_float16_t) {
+    // uint8_t inclusive step -1
+    // get 5...1
+
+    using element_type_t = std::float16_t;
+    element_type_t expect[] = {scf<16>(5.0f), scf<16>(4.0f), scf<16>(3.0f), scf<16>(2.0f), scf<16>(1.0f)};
+    verify_for_loop_indexed_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, true>(scf<16>(5.0f), scf<16>(1.0f), true, scf<16>(-1.0f)));
 }
 
 // If end is not exactly on step, inclusive and exclusive get same result (verified on Swift)
@@ -145,7 +247,7 @@ TEST_CASE_EX(rangex_test, step_gt_1_and_how_to_though_end_not_just_stepped) {
             sum += v;
             CHECK(index < sizeof(expect)/sizeof(expect[0]));
             CHECK(v == expect[index++]);
-            std::cout << v << " ";
+            //std::cout << v << " ";
         }
         CHECK(index == sizeof(expect)/sizeof(expect[0]));
         CHECK(sum == 1 + 4 + 7);
@@ -158,7 +260,7 @@ TEST_CASE_EX(rangex_test, step_gt_1_and_how_to_though_end_not_just_stepped) {
             sum += v;
             CHECK(index < sizeof(expect)/sizeof(expect[0]));
             CHECK(v == expect[index++]);
-            std::cout << v << " ";
+            //std::cout << v << " ";
         }
         CHECK(index == sizeof(expect)/sizeof(expect[0]));
         CHECK(sum == 1 + 4 + 7);
@@ -173,7 +275,7 @@ TEST_CASE_EX(rangex_test, step_gt_1_and_how_to_though_end_not_just_stepped) {
             sum += v;
             CHECK(index < sizeof(expect)/sizeof(expect[0]));
             CHECK(v == expect[index++]);
-            std::cout << v << " ";
+            //std::cout << v << " ";
         }
         CHECK(index == sizeof(expect)/sizeof(expect[0]));
         CHECK(sum == 1 + 4 + 7);
@@ -181,7 +283,7 @@ TEST_CASE_EX(rangex_test, step_gt_1_and_how_to_though_end_not_just_stepped) {
     verify(r);
     verify(rangex(1, 9, true, 3));
 
-    std::cout << std::endl;    
+    //std::cout << std::endl;    
 }
 
 // if from <= to/through and step < 0, for loop will do nothing
@@ -198,12 +300,12 @@ TEST_CASE_EX(rangex_test, do_nothing_cases) {
             sum += v;
             CHECK(index < sizeof(expect)/sizeof(expect[0]));
             CHECK(v == expect[index++]);
-            std::cout << v << " ";
+            //std::cout << v << " ";
         }
         CHECK(index == sizeof(expect)/sizeof(expect[0]));
         CHECK(sum == 0);
 
-        std::cout << std::endl;
+        //std::cout << std::endl;
     };
     verify(rangex<element_type_t>(1, 2, false, -1));
     verify(rangex<element_type_t>(1, 2, true, -1));
@@ -212,4 +314,3 @@ TEST_CASE_EX(rangex_test, do_nothing_cases) {
     verify(rangex<element_type_t>(2, 1, true, 1));
     verify(rangex<element_type_t>(2, 2, true, 1));
 }
-

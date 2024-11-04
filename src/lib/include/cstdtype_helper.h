@@ -2,6 +2,8 @@
 
 #include <type_traits>
 #include <cstdint>
+#include <stdfloat>
+#include <cmath>
 
 namespace ns_type_helper {
 
@@ -50,6 +52,91 @@ struct make_signed_custom<int64_t> {
     using type = int64_t;
 };
 
+template <>
+struct make_signed_custom<std::float16_t> {
+    using type = std::float16_t;
+};
+
+template <>
+struct make_signed_custom<std::float32_t> {
+    using type = std::float32_t;
+};
+
+template <>
+struct make_signed_custom<std::float64_t> {
+    using type = std::float64_t;
+};
+
+template <>
+struct make_signed_custom<std::float128_t> {
+    using type = std::float128_t;
+};
+
+template <>
+struct make_signed_custom<std::bfloat16_t> {
+    using type = std::bfloat16_t;
+};
+
+template <>
+struct make_signed_custom<float> {
+    using type = float;
+};
+template <>
+struct make_signed_custom<double> {
+    using type = double;
+};
+template <>
+struct make_signed_custom<long double> {
+    using type = long double;
+};
+
+// Helper template to select the floating-point type
+template <int Bits>
+struct FloatType;
+
+template <>
+struct FloatType<16> {
+    using type = std::float16_t;
+};
+
+template <>
+struct FloatType<32> {
+    using type = std::float32_t;
+};
+
+template <>
+struct FloatType<64> {
+    using type = std::float64_t;
+};
+
+template <>
+struct FloatType<128> {
+    using type = std::float128_t;
+};
+
+// Helper function to perform static casting
+template <int Bits, typename U>
+auto scf(U value) -> typename FloatType<Bits>::type {
+    return static_cast<typename FloatType<Bits>::type>(value);
+}
+
+// int main() {
+//     float value = 1.0f;
+
+//     // Perform the static cast using the helper function with 16 bits
+//     auto casted_value_16 = scf<16>(value);
+
+//     // Perform the static cast using the helper function with 32 bits
+//     auto casted_value_32 = scf<32>(value);
+
+//     // Print the casted values (cast back to float for printing)
+//     std::cout << "Original value: " << value << std::endl;
+//     std::cout << "Casted value (16 bits): " << static_cast<float>(casted_value_16) << std::endl;
+//     std::cout << "Casted value (32 bits): " << casted_value_32 << std::endl;
+
+//     return 0;
+// }
+
 // Convenience alias template
 template <typename T>
 using make_signed_custom_t = typename make_signed_custom<T>::type;
@@ -59,6 +146,8 @@ template <typename T, typename U>
 constexpr bool check_eq_typeof() {
     return std::is_same<T, U>::value;
 }
+
+
 // // Example usage
 // static_assert(check_eq_typeof<decltype(v), float>());
 
@@ -76,5 +165,23 @@ constexpr bool check_eq_typeof() {
 //     // Add more tests as needed
 //     return 0;
 // }
+
+// compile time choose % or std::fmod
+// Template function to perform modulus operation
+template<typename T>
+constexpr auto std_mod(T a, make_signed_custom_t<T> b) -> make_signed_custom_t<T> {
+    if constexpr (std::is_integral_v<T>) {
+        return a % b; // Use % for integer types
+    } else if constexpr (std::is_floating_point_v<T>) {
+        return std::fmod(a, b); // Use std::fmod for floating-point types
+    } else {
+        static_assert(std::is_integral_v<T> || std::is_floating_point_v<T>, "Unsupported type");
+    }
+}
+
+// Only unsigned char, signed char need special care
+constexpr auto std_mod(uint8_t a, int8_t b) -> int8_t {
+    return a % b;
+}
 
 } // ns_type_helper;

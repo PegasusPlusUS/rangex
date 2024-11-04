@@ -95,7 +95,7 @@ using signed_step_type_t = make_signed_custom_t<T>;
 
             // Align `end` based on last multiple of `step` in rangex
             this->_end = start + (num_steps * step);
-            bool exactly_on_step = (0 == rangex_size % step);
+            bool exactly_on_step = (0 == std_mod(rangex_size, step));
             if (!exactly_on_step) {
                 this->_end += step;
             }
