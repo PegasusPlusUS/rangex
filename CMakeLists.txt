@@ -21,7 +21,9 @@ add_compile_definitions(USE_GOOGLE_TEST=1)
 
 # Add GoogleTest
 set(GOOGLETEST_PATH ${CMAKE_SOURCE_DIR}/external/googletest)
-add_subdirectory(${GOOGLETEST_PATH})
+#add_subdirectory(${GOOGLETEST_PATH})
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/googletest ${CMAKE_BINARY_DIR}/googletest)
+
 # Enable CTest for running tests
 enable_testing()
 add_test(NAME rangex_test COMMAND rangex_test)
