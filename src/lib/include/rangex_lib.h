@@ -3,6 +3,8 @@
 #include "cstdtype_helper.h"
 using namespace ns_type_helper;
 
+#include <variant>
+
 namespace ns_rangex {
 
 /// 2 use cases:
