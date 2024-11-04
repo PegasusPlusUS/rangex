@@ -1,11 +1,13 @@
-#ifndef __RANGEX_LIB_H__
-#define __RANGEX_LIB_H__
+#pragma once
 
-// C++23, to support std::views::enumerate to implemente
-// for(auto [index, v] : range) {}
-#include <ranges>
+//#include <iostream>
 
-namespace ns_rangex {
+// #include <ranges>
+// #include <type_traits>
+// #include <cstdint>
+#include "cstdtype_helper.h"
+
+//namespace ns_rangex {
 
 /// 2 use cases:
 /// for(auto v : rangex<uint8_t>(start, end, step, inclusive)) {
@@ -19,9 +21,15 @@ namespace ns_rangex {
 /// for(auto [i, v] : rangex<uint8_t, true>(start, end, step, inclusive)) {
 ///   std::cout << "index: " << i << " , value:" << v << std::endl;
 /// }
+///
+///```
+/// 
+///```
+
 template <typename T = int, bool IncludeIndex = false>
 class rangex {
 public:
+using signed_step_type_t = make_signed_custom_t<T>;
     struct iterator {
     public:
         using value_type = std::conditional_t<IncludeIndex, std::pair<std::size_t, T>, T>;
@@ -34,7 +42,7 @@ public:
             }
         }
         // Iterator constructor
-        iterator(T value_, T step_)
+        iterator(T value_, signed_step_type_t step_)
             : value(value_)
             , step(step_)
             , _index(initialize_index()) // , _index(0)
@@ -59,29 +67,44 @@ public:
         }
         // Comparison operator to check if two iterators are not equal
         bool operator!=(const iterator& other) const {
+            //std::printf("loop condition: %d %d\n", value, other.value);
             return value != other.value; // Check if the current value is not equal to end value
         }
 
-    private:
+    protected:
         T value; // Current value
-        T step;  // Step size
+        signed_step_type_t step;  // Step size
         std::conditional_t<IncludeIndex, std::size_t, std::monostate> _index; //std::size_t _index;
     };
 
-    rangex(T start_, T end_, T step_ = 1, bool inclusive = false)
+    rangex(T start_, T end_, bool inclusive = false, signed_step_type_t step_ = 1)
         : start(start_)
         //, _end(end)
         , step(step_) {
-        // Calculate padding based on step direction
-        T rangex_size = end_ - start;
-        T num_steps = rangex_size / step;
+        if ((start_ <= end_ && step_ < 0)
+            || (start_ >= end_ && step_ > 0)
+           ) {
+            this->_end = start_; // will do nothing in loop
+        }
+        else if (0 == step_) {
+            // throw exception or allow possible infinity loop call next() if start != end?
+            this->_end = end_;
+        }
+        else {
+            // Calculate padding based on step direction
+            T rangex_size = end_ - start;
+            T num_steps = rangex_size / step;
 
-        // Align `end` based on last multiple of `step` in rangex
-        this->_end = start + (num_steps * step);
-        
-        // If inclusive, add one more `step` to include the endpoint
-        if (inclusive) {
-            this->_end += step;
+            // Align `end` based on last multiple of `step` in rangex
+            this->_end = start + (num_steps * step);
+            bool exactly_on_step = (0 == rangex_size % step);
+            if (!exactly_on_step) {
+                this->_end += step;
+            }
+            // If inclusive, add one more `step` to include the endpoint
+            if (inclusive && exactly_on_step) {
+                this->_end += step;
+            }
         }
     };
     // Begin method for rangex-based for loop
@@ -93,10 +116,10 @@ public:
         return iterator(_end, step);
     }
 
-private:
-    T start, _end, step; // Start, end, and step size of the range
+protected:
+    // Start, end, and step size of the range
+    T start, _end;
+    signed_step_type_t step; 
 };
 
-} // namespace ns_rangex
-
-#endif // __RANGEX_LIB_H__
+//} // namespace ns_rangex
