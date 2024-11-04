@@ -1,26 +1,3 @@
-#include "cstdtype_helper.h"
-#include <iostream>
-
-template <typename T>
-void printSignedType() {
-    using SignedType = make_signed_custom_t<T>;
-    std::cout << "Signed type for " << typeid(T).name() << " is " << typeid(SignedType).name() << std::endl;
-}
-
-int _main() {
-    printSignedType<uint16_t>(); // Should print int16_t
-    printSignedType<uint32_t>(); // Should print int32_t
-    // Add more tests as needed
-    using SignedType = make_signed_custom_t<uint16_t>;
-
-    SignedType x = -1;
-    std::cout << x << std::endl;
-
-    return 0;
-}
-// #define TEST_CASE_EX(ts, name) void ts##name()
-// #define CHECK(exp)
-
 #include "test_framework.h"
 
 #include <iostream>
@@ -29,14 +6,7 @@ int _main() {
 #include <cassert>
 
 #include "rangex_lib.h"
-namespace ns_rangex {}
 using namespace ns_rangex;
-
-// compile time check
-template <typename T, typename U>
-constexpr bool check_type() {
-    return std::is_same<T, U>::value;
-}
 
 // test_framework provides main()
 TEST_CASE_EX(rangex_test, default_exclusive_range_of_int) {
@@ -48,7 +18,7 @@ TEST_CASE_EX(rangex_test, default_exclusive_range_of_int) {
     element_type_t expect[] = {1, 2, 3, 4, 5};
     size_t index = 0;
     for(auto v : rangex(1, 6)) {
-        static_assert(check_type<decltype(v), element_type_t>());
+        static_assert(check_eq_typeof<decltype(v), element_type_t>());
         sum += v;
         CHECK(index < sizeof(expect)/sizeof(expect[0]));
         CHECK(v == expect[index++]);
@@ -68,7 +38,7 @@ TEST_CASE_EX(rangex_test, inclusive_range_of_int) {
     element_type_t expect[] = {1, 2, 3, 4, 5};
     size_t index = 0;
     for(auto v : rangex(1, 5, true)) {
-        static_assert(check_type<decltype(v), element_type_t>());
+        static_assert(check_eq_typeof<decltype(v), element_type_t>());
         sum += v;
         CHECK(index < 5);
         CHECK(v == expect[index++]);
@@ -88,7 +58,7 @@ TEST_CASE_EX(rangex_test, inclusive_range_downward_of_int_default) {
     element_type_t expect[] = {5, 4, 3, 2, 1};
     size_t index = 0;
     for(auto v : rangex(5, 1, true, -1)) {
-        static_assert(check_type<decltype(v), element_type_t>());
+        static_assert(check_eq_typeof<decltype(v), element_type_t>());
         sum += v;
         CHECK(index < 5);
         CHECK(v == expect[index++]);
@@ -108,7 +78,7 @@ TEST_CASE_EX(rangex_test, inclusive_range_downward_of_int_explicitly_) {
     element_type_t expect[] = {5, 4, 3, 2, 1};
     size_t index = 0;
     for(auto v : rangex<element_type_t>(5, 1, true, -1)) {
-        static_assert(check_type<decltype(v), element_type_t>());
+        static_assert(check_eq_typeof<decltype(v), element_type_t>());
         sum += v;
         CHECK(index < 5);
         CHECK(v == expect[index++]);
@@ -128,7 +98,7 @@ TEST_CASE_EX(rangex_test, inclusive_range_downward_of_uint8_t_explicitly_no_inde
     element_type_t expect[] = {5, 4, 3, 2, 1};
     size_t index = 0;
     for(auto v : rangex<element_type_t, false>(5, 1, true, -1)) {
-        static_assert(check_type<decltype(v), element_type_t>());
+        static_assert(check_eq_typeof<decltype(v), element_type_t>());
         sum += v;
         CHECK(index < 5);
         CHECK(v == expect[index++]);
@@ -148,8 +118,8 @@ TEST_CASE_EX(rangex_test, inclusive_indexed_range_downward_of_typename_uint8_t) 
     element_type_t expect[] = {5, 4, 3, 2, 1, 0};
     size_t index = 0;
     for(auto iv : rangex<element_type_t, true>(5, 0, true, -1)) {
-        static_assert(check_type<decltype(iv.first), size_t>());
-        static_assert(check_type<decltype(iv.second), element_type_t>());
+        static_assert(check_eq_typeof<decltype(iv.first), size_t>());
+        static_assert(check_eq_typeof<decltype(iv.second), element_type_t>());
         size_t auto_index = iv.first;
         element_type_t v = iv.second;
         sum += v;
@@ -171,7 +141,7 @@ TEST_CASE_EX(rangex_test, step_gt_1_and_how_to_though_end_not_just_stepped) {
         element_type_t sum = 0;
         size_t index = 0;
         for(auto v : rangex(1, 9, true, 3)) {
-            static_assert(check_type<decltype(v), element_type_t>());
+            static_assert(check_eq_typeof<decltype(v), element_type_t>());
             sum += v;
             CHECK(index < sizeof(expect)/sizeof(expect[0]));
             CHECK(v == expect[index++]);
@@ -184,7 +154,7 @@ TEST_CASE_EX(rangex_test, step_gt_1_and_how_to_though_end_not_just_stepped) {
         element_type_t sum = 0;
         size_t index = 0;
         for(auto v : rangex(1, 9, false, 3)) {
-            static_assert(check_type<decltype(v), element_type_t>());
+            static_assert(check_eq_typeof<decltype(v), element_type_t>());
             sum += v;
             CHECK(index < sizeof(expect)/sizeof(expect[0]));
             CHECK(v == expect[index++]);
@@ -199,7 +169,7 @@ TEST_CASE_EX(rangex_test, step_gt_1_and_how_to_though_end_not_just_stepped) {
         element_type_t sum = 0;
         size_t index = 0;
         for(auto v : r) {
-            static_assert(check_type<decltype(v), element_type_t>());
+            static_assert(check_eq_typeof<decltype(v), element_type_t>());
             sum += v;
             CHECK(index < sizeof(expect)/sizeof(expect[0]));
             CHECK(v == expect[index++]);
@@ -224,7 +194,7 @@ TEST_CASE_EX(rangex_test, do_nothing_cases) {
         element_type_t sum = 0;
         size_t index = 0;
         for(auto v : r) {
-            static_assert(check_type<decltype(v), element_type_t>());
+            static_assert(check_eq_typeof<decltype(v), element_type_t>());
             sum += v;
             CHECK(index < sizeof(expect)/sizeof(expect[0]));
             CHECK(v == expect[index++]);

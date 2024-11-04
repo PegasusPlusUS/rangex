@@ -45,23 +45,10 @@ endif()
 
 ####################################
 
-set(RANGEX_LIB_SOURCES
-    src/lib/rangex_lib.cpp
-)
-add_library(rangex_lib STATIC ${RANGEX_LIB_SOURCES})
-# Optionally add include directories for the library
-target_include_directories(rangex_lib PUBLIC
-    ${PROJECT_SOURCE_DIR}/external/googletest/googletest/include
-    ${PROJECT_SOURCE_DIR}/external/doctest/doctest
-    ${PROJECT_SOURCE_DIR}/src/lib/include
-    ${PROJECT_SOURCE_DIR}
-)
-
 # Specify the source files
 set(SOURCES
     src/main.cpp
 )
-
 # Create the executable target
 add_executable(rangex_test ${SOURCES})
 target_include_directories(rangex_test PUBLIC
@@ -73,7 +60,7 @@ target_include_directories(rangex_test PUBLIC
 
 # Optionally, you can add any required libraries
 if (USE_DOC_TEST)
-target_link_libraries(rangex_test PRIVATE rangex_lib doctest)
+target_link_libraries(rangex_test PRIVATE doctest)
 endif()
 
 if (USE_GOOGLE_TEST)
@@ -83,5 +70,5 @@ set(GTest_LINK_ENTRIES
     GTest::gmock
     GTest::gmock_main
 )
-target_link_libraries(rangex_test PRIVATE rangex_lib ${GTest_LINK_ENTRIES})
+target_link_libraries(rangex_test PRIVATE ${GTest_LINK_ENTRIES})
 endif()
