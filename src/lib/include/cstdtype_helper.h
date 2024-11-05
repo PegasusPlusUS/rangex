@@ -175,7 +175,10 @@ constexpr auto std_div_exact(T a, make_signed_custom_t<T> b, T &q) -> bool {
         return 0 == a % b; // Use % for integer types
     } else if constexpr (std::is_floating_point_v<T>) {
         q = static_cast<int>(std::floor(a / b));
-        return 100 * std::abs(std::fmod(a, b)) < 1; // Use std::fmod for floating-point types
+        // std::abs not available for std::float128_t
+        //return 100 * std::abs(std::fmod(a, b)) < 1; // Use std::fmod for floating-point types
+        return -1 < (10000 * std::fmod(a, b))
+            && (std::fmod(a, b) * 10000) < 1;
     } else {
         static_assert(std::is_integral_v<T> || std::is_floating_point_v<T>, "Unsupported type");
     }

@@ -293,6 +293,7 @@ TEST_CASE_EX(rangex_test, step_gt_1_and_how_to_though_end_not_just_stepped_for_f
     verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<32>(1.0f), scf<32>(9.0f), false, scf<32>(3.0f)));
     verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<32>(1.0f), scf<32>(9.0f), true, scf<32>(3.0f)));
 }
+
 // if from <= to/through and step < 0, for loop will do nothing
 // if from >= to/through and step > 0, for loop will do nothing
 // if step == 0, Swift will panic. Should throw div by 0 exception or infinity loop?
@@ -320,4 +321,30 @@ TEST_CASE_EX(rangex_test, do_nothing_cases) {
     verify(rangex<element_type_t>(2, 1, false, 1));
     verify(rangex<element_type_t>(2, 1, true, 1));
     verify(rangex<element_type_t>(2, 2, true, 1));
+
+    {
+        // if from <= to/through and step < 0, for loop will do nothing
+        // if from >= to/through and step > 0, for loop will do nothing
+        // if step == 0, Swift will panic. Should throw div by 0 exception or infinity loop?
+        using element_type_t = std::float32_t;
+        //element_type_t expect[] = {scf<32>(5.0f), scf<32>(3.0f), scf<32>(1.0f)};
+        element_type_t expect[] = {};
+        verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<32>(1.0f), scf<32>(2.0f), false, scf<32>(-1.0f)));
+        verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<32>(1.0f), scf<32>(2.0f), true, scf<32>(-1.0f)));
+        verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<32>(2.0f), scf<32>(1.0f), false, scf<32>(1.0f)));
+        verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<32>(2.0f), scf<32>(1.0f), true, scf<32>(1.0f)));
+
+        //behaviour under step is 0 is undefined
+        //verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<32>(1.0f), scf<32>(2.0f), false, scf<32>(0.0f)));
+        //verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<32>(2.0f), scf<32>(1.0f), true, scf<32>(0.0f)));
+    }
+}
+
+// std:fmod/floor etc, do not support float128
+TEST_CASE_EX(SkipTest, float128_cause_trouble) {
+    GTEST_SKIP() << "Wait for better std::float128_t support";
+    //using element_type_t = std::float128_t;
+    using element_type_t = std::float64_t;
+    element_type_t expect[] = {};
+    verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<128>(1.0f), scf<128>(2.0f), true, scf<128>(0.5f)));
 }
