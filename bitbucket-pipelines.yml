@@ -22,6 +22,6 @@ pipelines:
         - step:
             name: Build and Run
             script:
-              - make compile
+              - cmake -S . -B .build && cmake --build .build
               # Execute your C++ application after compilation to check success
-              - make distcheck
+              - 
