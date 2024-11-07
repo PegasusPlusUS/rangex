@@ -5,8 +5,10 @@
 
 
 image: gcc:10.2
-
-
+definitions:
+  services:
+    docker:
+      memory: 7128
 pipelines:
   default:
     - parallel:
@@ -21,6 +23,7 @@ pipelines:
               - echo OK make lint
         - step:
             name: Build and Run
+            image: rikorose/gcc-cmake
             script:
               - git submodule update --recursive --init
               - apt-get update && apt-get install -y --no-install-recommends uuid-dev libssl-dev libz-dev libzmq5 libzmq3-dev
