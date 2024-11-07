@@ -13,7 +13,7 @@ pipelines:
         - step:
             name: Test
             script:
-              - ctest
+              - .build\rangex_test
         - step:
             name: Lint
             script:
