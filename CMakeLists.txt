@@ -74,3 +74,13 @@ set(GTest_LINK_ENTRIES
 )
 target_link_libraries(rangex_test PRIVATE ${GTest_LINK_ENTRIES})
 endif()
+
+set(EXAMPLE_SOURCES
+    examples/rangex_demo.cpp
+)
+add_executable(rangex_demo ${EXAMPLE_SOURCES})
+target_include_directories(rangex_demo PUBLIC
+    ${PROJECT_SOURCE_DIR}/src/lib/include
+    ${PROJECT_SOURCE_DIR}
+)
+target_link_libraries(rangex_demo PRIVATE)
