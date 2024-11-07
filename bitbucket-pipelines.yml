@@ -22,6 +22,14 @@ pipelines:
         - step:
             name: Build and Run
             script:
-              - cmake -S . -B .build && cmake --build .build
+              - git submodule update --recursive --init
+              - apt-get update && apt-get install -y --no-install-recommends uuid-dev libssl-dev libz-dev libzmq5 libzmq3-dev
+              - mkdir _bld && cd _bld
+              - cmake -DCMAKE_BUILD_TYPE=Debug ..
+              - make -j10
+            caches:
+              - docker
+            artifacts:
+              - _bld/rangex_test
               # Execute your C++ application after compilation to check success
               - 
