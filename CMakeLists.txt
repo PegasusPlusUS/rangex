@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.20)
 
 # Set the project name and version
-project(rangex_test VERSION 0.3 LANGUAGES CXX)
+project(rangex_test VERSION 0.3.1 LANGUAGES CXX)
 
 # Specify which compiler will be Use
 #set(CMAKE_C_COMPILER "/usr/bin/gcc")
