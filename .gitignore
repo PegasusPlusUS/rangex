@@ -31,8 +31,8 @@
 *.out
 *.app
 
-external/doctest
-external/googletest
+external/doctest/
+external/googletest/
 .build/
 out/
 .vs/
