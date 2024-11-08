@@ -3,11 +3,12 @@
 #include <type_traits>
 #include <cstdint>
 //#if !_HAS_CXX23
-#if has_no_std_float
+#ifdef has_no_std_float
 namespace std {
     using float16_t = std::uint16_t;    // 16 bit float need half_float or Eigen support
     using float32_t = float;
     using float64_t = double;
+    using bfloat16_t = std::uint16_t;
 }
 #else
 #include <stdfloat>
@@ -61,6 +62,20 @@ struct make_signed_custom<int64_t> {
     using type = int64_t;
 };
 
+#ifdef has_no_std_float
+template <>
+struct make_signed_custom<float> {
+    using type = float;
+};
+template <>
+struct make_signed_custom<double> {
+    using type = double;
+};
+template <>
+struct make_signed_custom<long double> {
+    using type = long double;
+};
+#else
 template <>
 struct make_signed_custom<std::float16_t> {
     using type = std::float16_t;
@@ -85,19 +100,7 @@ template <>
 struct make_signed_custom<std::bfloat16_t> {
     using type = std::bfloat16_t;
 };
-
-template <>
-struct make_signed_custom<float> {
-    using type = float;
-};
-template <>
-struct make_signed_custom<double> {
-    using type = double;
-};
-template <>
-struct make_signed_custom<long double> {
-    using type = long double;
-};
+#endif
 
 // Helper template to select the floating-point type
 template <int Bits>
@@ -107,21 +110,20 @@ template <>
 struct FloatType<16> {
     using type = std::float16_t;
 };
-
 template <>
 struct FloatType<32> {
     using type = std::float32_t;
 };
-
 template <>
 struct FloatType<64> {
     using type = std::float64_t;
 };
-
+#ifdef is_float128_stable
 template <>
 struct FloatType<128> {
     using type = std::float128_t;
 };
+#endif
 
 // Helper function to perform static casting
 template <int Bits, typename U>
