@@ -346,5 +346,7 @@ TEST_CASE_EX(SkipTest, float128_cause_trouble) {
     //using element_type_t = std::float128_t;
     using element_type_t = std::float64_t;
     element_type_t expect[] = {};
-    verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<128>(1.0f), scf<128>(2.0f), true, scf<128>(0.5f)));
+    //#define float_bits 128
+    #define float_bits 64
+    verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<float_bits>(1.0f), scf<float_bits>(2.0f), true, scf<float_bits>(0.5f)));
 }

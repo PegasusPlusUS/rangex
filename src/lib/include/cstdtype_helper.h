@@ -2,7 +2,16 @@
 
 #include <type_traits>
 #include <cstdint>
+//#if !_HAS_CXX23
+#if has_no_std_float
+namespace std {
+    using float16_t = std::uint16_t;    // 16 bit float need half_float or Eigen support
+    using float32_t = float;
+    using float64_t = double;
+}
+#else
 #include <stdfloat>
+#endif
 #include <cmath>
 
 namespace ns_type_helper {
