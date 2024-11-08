@@ -1,3 +1,4 @@
+#define has_no_std_float
 #include "rangex_lib.h"
 using namespace ns_rangex;
 
