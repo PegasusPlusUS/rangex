@@ -1,5 +1,11 @@
 #pragma once
 
+// __rangex_version__ 0.3.1
+#define __rangex_major__ 0
+#define __rangex_minor__ 3
+#define __rangex_patchlevel__ 1
+#define __rangex_version__ (__rangex_major__ * 10000 + __rangex_minor__ * 100 + __rangex_patchlevel__)
+ 
 #include "cstdtype_helper.h"
 using namespace ns_type_helper;
 
