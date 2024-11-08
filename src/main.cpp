@@ -118,7 +118,7 @@ void verify_for_loop_range(T expect[], size_t expect_len, rangex<T, false> r) {
         static_assert(check_eq_typeof<decltype(v), T>());
         sum += v;
         CHECK(index < expect_len);
-        CHECK(v == expect[index++]);
+        CHECK_EQ(v, expect[index++]);
     }
     CHECK(index == expect_len);
 }
