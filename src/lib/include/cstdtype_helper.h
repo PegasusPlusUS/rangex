@@ -120,7 +120,7 @@ struct make_signed_custom<int64_t> {
     using type = int64_t;
 };
 
-#ifndef COMPILER_HAS_STD_FLOAT
+#if !defined( COMPILER_HAS_STD_FLOAT ) || defined (COMPILER_HAS_NO_STD_FLOAT) 
 template <>
 struct make_signed_custom<float> {
     using type = float;
