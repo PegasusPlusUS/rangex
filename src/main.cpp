@@ -6,7 +6,7 @@
 #include <type_traits>
 #include <cassert>
 
-//#define has_no_std_float
+#define COMPILER_HAS_STD_FLOAT
 #include "rangex_lib.h"
 using namespace ns_rangex;
 
