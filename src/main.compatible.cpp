@@ -5,7 +5,10 @@
 #include <type_traits>
 #include <cassert>
 
-#define has_no_std_float
+#ifdef _MSC_VER
+#define COMPILER_HAS_NO_STD_FLOAT
+#endif
+
 #include "rangex_lib.h"
 using namespace ns_rangex;
 
