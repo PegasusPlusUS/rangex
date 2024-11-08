@@ -2,7 +2,55 @@
 
 #include <type_traits>
 #include <cstdint>
-//#if !_HAS_CXX23
+#include <iostream>
+
+namespace ns_type_helper {
+// The <stdfloat> header, which provides support for fixed-width floating-point types, is part of the C++23 standard. Here's the support status for different compilers:
+// GCC: Support for <stdfloat> is available starting from GCC 13 when using the -std=c++23 option.
+// Clang: Clang has support for <stdfloat> starting from Clang 14.
+// MSVC: Microsoft Visual Studio (MSVC) supports <stdfloat> from MSVC 19.32.
+// Define a constexpr function to check compiler and version
+constexpr bool checkCompilerHasStdFloat() {
+#if _HAS_CXX23
+    #ifdef __clang__
+        return (__clang_major__ * 10000 + __clang_minor__ * 100 + __clang_patchlevel__) >= 140000;
+    #elif defined(__GNUC__) || defined(__GNUG__)
+        return (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__) >= 130000;
+    #elif defined(_MSC_VER)
+        return _MSC_VER >= 1932;
+    #else
+        return false;
+    #endif
+#else
+    return false;
+#endif
+}
+
+// Define a template function with no parameters to act as macro avoiding multiple function body implementation
+template <typename T = void>
+void printCompilerInfo() {
+    #ifdef __clang__
+        std::cout << "Compiler: Clang\n";
+        std::cout << "Version: " << __clang_major__ << "." << __clang_minor__ << "." << __clang_patchlevel__ << "\n";
+    #elif defined(__GNUC__) || defined(__GNUG__)
+        std::cout << "Compiler: GCC\n";
+        std::cout << "Version: " << __GNUC__ << "." << __GNUC_MINOR__ << "." << __GNUC_PATCHLEVEL__ << "\n";
+    #elif defined(_MSC_VER)
+        std::cout << "Compiler: MSVC\n";
+        std::cout << "Version: " << _MSC_VER << "\n";
+    #else
+        std::cout << "Compiler: Unknown\n";
+    #endif
+}
+
+} // ns_type_helper
+
+// Define a macro based on the constexpr function result
+constexpr bool hasNoStdFloat = !ns_type_helper::checkCompilerHasStdFloat();
+#if hasNoStdFloat
+    #define has_no_std_float
+#endif
+
 #ifdef has_no_std_float
 namespace std {
     using float16_t = std::uint16_t;    // 16 bit float need half_float or Eigen support

@@ -1,4 +1,3 @@
-#define has_no_std_float
 #include "rangex_lib.h"
 using namespace ns_rangex;
 
@@ -8,6 +7,16 @@ using namespace ns_rangex;
 #include <numeric> // accumulate
 
 int main() {
+    printCompilerInfo();
+    std::cout << "Compiler " << (checkCompilerHasStdFloat() ? "HAS" : "has NO") << " stdfloat support." << std::endl;
+    std::cout << "has_no_std_flaot " 
+#ifdef has_no_std_float
+    << ""
+#else
+    << " NOT "
+#endif
+    << "defined." << std::endl;
+
     std::uint16_t sum = 0;
     rangex<std::uint8_t> r = rangex<std::uint8_t>(1, 100, true);
     for (auto i : r) {

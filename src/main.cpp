@@ -6,11 +6,24 @@
 #include <type_traits>
 #include <cassert>
 
-#define has_no_std_float
+//#define has_no_std_float
 #include "rangex_lib.h"
 using namespace ns_rangex;
 
 // test_framework provides main()
+TEST_CASE_EX(rangex_test, show_compiler_info) {
+    printCompilerInfo();
+
+    std::cout << "Compiler " << (checkCompilerHasStdFloat() ? "HAS" : "has NO") << " stdfloat support." << std::endl;
+    std::cout << "has_no_std_flaot " 
+#ifdef has_no_std_float
+    << ""
+#else
+    << " NOT "
+#endif
+    << "defined." << std::endl;
+}
+
 TEST_CASE_EX(rangex_test, default_exclusive_range_of_int) {
     // default rangex<int, false> as normal exclusive loop at step 1
     // get 1...5
@@ -143,7 +156,7 @@ TEST_CASE_EX(rangex_test, inclusive_range_downward_of_float_default) {
     // float inclusive step -1
     // get 5...1 by -1
     using element_type_t = std::float32_t;
-    #define element_type_bits 32
+    constexpr int element_type_bits = 32;
     element_type_t expect[] = {scf<element_type_bits>(5.0f), scf<element_type_bits>(4.0f), scf<element_type_bits>(3.0f), scf<element_type_bits>(2.0f), scf<element_type_bits>(1.0f)};
     verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<element_type_bits>(5.0f), scf<element_type_bits>(1.0f), true, scf<element_type_bits>(-1.0f)));
 }
@@ -172,7 +185,7 @@ TEST_CASE_EX(rangex_test, inclusive_range_downward_of_float_explicitly) {
     // float inclusive step -1
     // get 5...1 by -1
     using element_type_t = std::float32_t;
-    #define element_type_bits 32
+    constexpr int element_type_bits = 32;
     element_type_t expect[] = {scf<element_type_bits>(5.0f), scf<element_type_bits>(4.0f), scf<element_type_bits>(3.0f), scf<element_type_bits>(2.0f), scf<element_type_bits>(1.0f)};
     verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<element_type_bits>(5.0f), scf<element_type_bits>(1.0f), true, scf<element_type_bits>(-1.0f)));
 }
@@ -202,7 +215,7 @@ TEST_CASE_EX(rangex_test, inclusive_range_downward_of_float64_t_explicitly_no_in
     // get 5...1 by -1
 
     using element_type_t = std::float64_t;
-    #define element_type_bits 64
+    constexpr int element_type_bits = 64;
     element_type_t expect[] = {scf<element_type_bits>(5.0f), scf<element_type_bits>(4.0f), scf<element_type_bits>(3.0f), scf<element_type_bits>(2.0f), scf<element_type_bits>(1.0f)};
     verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<element_type_bits>(5.0f), scf<element_type_bits>(1.0f), true, scf<element_type_bits>(-1.0f)));
 }
@@ -238,7 +251,7 @@ TEST_CASE_EX(SkipTest, inclusive_indexed_range_downward_of_typename_float16_t) {
     // get 5...1
 
     using element_type_t = std::float16_t;
-    #define element_type_bits 16
+    constexpr int element_type_bits = 16;
     element_type_t expect[] = {scf<element_type_bits>(5.0f), scf<element_type_bits>(4.0f), scf<element_type_bits>(3.0f), scf<element_type_bits>(2.0f), scf<element_type_bits>(1.0f)};
     verify_for_loop_indexed_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, true>(scf<element_type_bits>(5.0f), scf<element_type_bits>(1.0f), true, scf<element_type_bits>(-1.0f)));
 }
@@ -348,7 +361,7 @@ TEST_CASE_EX(rangex_test, do_nothing_cases) {
         using element_type_t = std::float32_t;
         //element_type_t expect[] = {scf<32>(5.0f), scf<32>(3.0f), scf<32>(1.0f)};
         // Compatability: MSVC can't create zero element, place a stub 0
-        element_type_t expect[] = { 0.0 };
+        element_type_t expect[] = { scf<32>(0.0f) };
         verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]) - 1, rangex<element_type_t, false>(scf<32>(1.0f), scf<32>(2.0f), false, scf<32>(-1.0f)));
         verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]) - 1, rangex<element_type_t, false>(scf<32>(1.0f), scf<32>(2.0f), true, scf<32>(-1.0f)));
         verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]) - 1, rangex<element_type_t, false>(scf<32>(2.0f), scf<32>(1.0f), false, scf<32>(1.0f)));
@@ -367,7 +380,6 @@ TEST_CASE_EX(SkipTest, float128_cause_trouble) {
     using element_type_t = std::float64_t;
     // Compatability: MSVC can't create zero element, place a stub 0
     element_type_t expect[] = { 0.0 };
-    //#define float_bits 128
-    #define float_bits 64
+    constexpr int float_bits = 64; //128
     verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]) - 1, rangex<element_type_t, false>(scf<float_bits>(1.0f), scf<float_bits>(2.0f), true, scf<float_bits>(0.5f)));
 }
