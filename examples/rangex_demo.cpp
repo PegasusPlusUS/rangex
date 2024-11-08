@@ -1,4 +1,4 @@
-#define COMPILER_HAS_STD_FLOAT
+//#define COMPILER_HAS_STD_FLOAT
 
 #include "rangex_lib.h"
 using namespace ns_rangex;

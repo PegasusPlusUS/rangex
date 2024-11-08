@@ -61,7 +61,7 @@ void printCompilerInfo() {
     #endif
 #endif
 
-#ifdef COMPILER_HAS_STD_FLOAT
+#ifndef COMPILER_HAS_STD_FLOAT
 namespace std {
     using float16_t = std::uint16_t;    // 16 bit float need half_float or Eigen support
     using float32_t = float;
@@ -120,7 +120,7 @@ struct make_signed_custom<int64_t> {
     using type = int64_t;
 };
 
-#ifdef COMPILER_HAS_STD_FLOAT
+#ifndef COMPILER_HAS_STD_FLOAT
 template <>
 struct make_signed_custom<float> {
     using type = float;
