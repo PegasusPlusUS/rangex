@@ -61,7 +61,7 @@ void printCompilerInfo() {
     #endif
 #endif
 
-#ifndef COMPILER_HAS_STD_FLOAT
+#if !defined( COMPILER_HAS_STD_FLOAT ) || defined (COMPILER_HAS_NO_STD_FLOAT)
 namespace std {
     using float16_t = std::uint16_t;    // 16 bit float need half_float or Eigen support
     using float32_t = float;
