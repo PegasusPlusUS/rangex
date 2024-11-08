@@ -133,7 +133,7 @@ void verify_for_loop_indexed_range(T expect[], size_t expect_len, rangex<T, true
         sum += iv.second;
         CHECK(index == iv.first);
         CHECK(index < expect_len);
-        CHECK_EQ(iv.second == expect[index++]);
+        CHECK_EQ(iv.second, expect[index++]);
     }
     CHECK(index == expect_len);
 }
