@@ -142,9 +142,10 @@ void verify_for_loop_indexed_range(T expect[], size_t expect_len, rangex<T, true
 TEST_CASE_EX(rangex_test, inclusive_range_downward_of_float_default) {
     // float inclusive step -1
     // get 5...1 by -1
-    using element_type_t = std::float16_t;
-    element_type_t expect[] = {scf<16>(5.0f), scf<16>(4.0f), scf<16>(3.0f), scf<16>(2.0f), scf<16>(1.0f)};
-    verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<16>(5.0f), scf<16>(1.0f), true, scf<16>(-1.0f)));
+    using element_type_t = std::float32_t;
+    #define element_type_bits 32
+    element_type_t expect[] = {scf<element_type_bits>(5.0f), scf<element_type_bits>(4.0f), scf<element_type_bits>(3.0f), scf<element_type_bits>(2.0f), scf<element_type_bits>(1.0f)};
+    verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<element_type_bits>(5.0f), scf<element_type_bits>(1.0f), true, scf<element_type_bits>(-1.0f)));
 }
 
 TEST_CASE_EX(rangex_test, inclusive_range_downward_of_int_explicitly) {
@@ -170,9 +171,10 @@ TEST_CASE_EX(rangex_test, inclusive_range_downward_of_int_explicitly) {
 TEST_CASE_EX(rangex_test, inclusive_range_downward_of_float_explicitly) {
     // float inclusive step -1
     // get 5...1 by -1
-    using element_type_t = std::float16_t;
-    element_type_t expect[] = {scf<16>(5.0f), scf<16>(4.0f), scf<16>(3.0f), scf<16>(2.0f), scf<16>(1.0f)};
-    verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<16>(5.0f), scf<16>(1.0f), true, scf<16>(-1.0f)));
+    using element_type_t = std::float32_t;
+    #define element_type_bits 32
+    element_type_t expect[] = {scf<element_type_bits>(5.0f), scf<element_type_bits>(4.0f), scf<element_type_bits>(3.0f), scf<element_type_bits>(2.0f), scf<element_type_bits>(1.0f)};
+    verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<element_type_bits>(5.0f), scf<element_type_bits>(1.0f), true, scf<element_type_bits>(-1.0f)));
 }
 
 TEST_CASE_EX(rangex_test, inclusive_range_downward_of_uint8_t_explicitly_no_index_explicitly) {
@@ -200,8 +202,9 @@ TEST_CASE_EX(rangex_test, inclusive_range_downward_of_float64_t_explicitly_no_in
     // get 5...1 by -1
 
     using element_type_t = std::float64_t;
-    element_type_t expect[] = {scf<64>(5.0f), scf<64>(4.0f), scf<64>(3.0f), scf<64>(2.0f), scf<64>(1.0f)};
-    verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<64>(5.0f), scf<64>(1.0f), true, scf<64>(-1.0f)));
+    #define element_type_bits 64
+    element_type_t expect[] = {scf<element_type_bits>(5.0f), scf<element_type_bits>(4.0f), scf<element_type_bits>(3.0f), scf<element_type_bits>(2.0f), scf<element_type_bits>(1.0f)};
+    verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<element_type_bits>(5.0f), scf<element_type_bits>(1.0f), true, scf<element_type_bits>(-1.0f)));
 }
 
 TEST_CASE_EX(rangex_test, inclusive_indexed_range_downward_of_typename_uint8_t) {
@@ -228,6 +231,18 @@ TEST_CASE_EX(rangex_test, inclusive_indexed_range_downward_of_typename_uint8_t) 
     //std::cout << std::endl;
 }
 
+#ifdef has_no_std_float
+TEST_CASE_EX(SkipTest, inclusive_indexed_range_downward_of_typename_float16_t) {
+    GTEST_SKIP() << "Wait half float support std::float16_t";
+    // uint8_t inclusive step -1
+    // get 5...1
+
+    using element_type_t = std::float16_t;
+    #define element_type_bits 16
+    element_type_t expect[] = {scf<element_type_bits>(5.0f), scf<element_type_bits>(4.0f), scf<element_type_bits>(3.0f), scf<element_type_bits>(2.0f), scf<element_type_bits>(1.0f)};
+    verify_for_loop_indexed_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, true>(scf<element_type_bits>(5.0f), scf<element_type_bits>(1.0f), true, scf<element_type_bits>(-1.0f)));
+}
+#else
 TEST_CASE_EX(rangex_test, inclusive_indexed_range_downward_of_typename_float16_t) {
     // uint8_t inclusive step -1
     // get 5...1
@@ -236,6 +251,7 @@ TEST_CASE_EX(rangex_test, inclusive_indexed_range_downward_of_typename_float16_t
     element_type_t expect[] = {scf<16>(5.0f), scf<16>(4.0f), scf<16>(3.0f), scf<16>(2.0f), scf<16>(1.0f)};
     verify_for_loop_indexed_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, true>(scf<16>(5.0f), scf<16>(1.0f), true, scf<16>(-1.0f)));
 }
+#endif
 
 // If end is not exactly on step, inclusive and exclusive get same result (verified on Swift)
 TEST_CASE_EX(rangex_test, step_gt_1_and_how_to_though_end_not_just_stepped) {
