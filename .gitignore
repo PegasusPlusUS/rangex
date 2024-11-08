@@ -37,3 +37,5 @@ external/googletest
 out/
 .vs/
 .vscode/
+
+Testing/
