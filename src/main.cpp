@@ -244,7 +244,7 @@ TEST_CASE_EX(rangex_test, inclusive_indexed_range_downward_of_typename_uint8_t) 
     //std::cout << std::endl;
 }
 
-#ifdef has_no_std_float
+#ifndef COMPILER_HAS_STD_FLOAT
 TEST_CASE_EX(SkipTest, inclusive_indexed_range_downward_of_typename_float16_t) {
     GTEST_SKIP() << "Wait half float support std::float16_t";
     // uint8_t inclusive step -1
