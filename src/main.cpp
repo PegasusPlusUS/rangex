@@ -300,18 +300,19 @@ TEST_CASE_EX(rangex_test, step_gt_1_and_how_to_though_end_not_just_stepped_for_f
 // if step == 0, Swift will panic. Should throw div by 0 exception or infinity loop?
 TEST_CASE_EX(rangex_test, do_nothing_cases) {
     using element_type_t = uint8_t;
-    element_type_t expect[] = {};
+    // Compatability: MSVC can't create zero element, place a stub 0
+    element_type_t expect[] = { 0 };
     auto verify = [expect] (rangex<element_type_t> r) {
         element_type_t sum = 0;
         size_t index = 0;
         for(auto v : r) {
             static_assert(check_eq_typeof<decltype(v), element_type_t>());
             sum += v;
-            CHECK(index < sizeof(expect)/sizeof(expect[0]));
-            CHECK(v == expect[index++]);
+            CHECK(index < sizeof(expect)/sizeof(expect[0]) - 1);
+            CHECK(v == expect[1 + index++]);
             //std::cout << v << " ";
         }
-        CHECK(index == sizeof(expect)/sizeof(expect[0]));
+        CHECK(index == sizeof(expect)/sizeof(expect[0]) - 1);
         CHECK(sum == 0);
 
         //std::cout << std::endl;
@@ -329,11 +330,12 @@ TEST_CASE_EX(rangex_test, do_nothing_cases) {
         // if step == 0, Swift will panic. Should throw div by 0 exception or infinity loop?
         using element_type_t = std::float32_t;
         //element_type_t expect[] = {scf<32>(5.0f), scf<32>(3.0f), scf<32>(1.0f)};
-        element_type_t expect[] = {};
-        verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<32>(1.0f), scf<32>(2.0f), false, scf<32>(-1.0f)));
-        verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<32>(1.0f), scf<32>(2.0f), true, scf<32>(-1.0f)));
-        verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<32>(2.0f), scf<32>(1.0f), false, scf<32>(1.0f)));
-        verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<32>(2.0f), scf<32>(1.0f), true, scf<32>(1.0f)));
+        // Compatability: MSVC can't create zero element, place a stub 0
+        element_type_t expect[] = { 0.0 };
+        verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]) - 1, rangex<element_type_t, false>(scf<32>(1.0f), scf<32>(2.0f), false, scf<32>(-1.0f)));
+        verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]) - 1, rangex<element_type_t, false>(scf<32>(1.0f), scf<32>(2.0f), true, scf<32>(-1.0f)));
+        verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]) - 1, rangex<element_type_t, false>(scf<32>(2.0f), scf<32>(1.0f), false, scf<32>(1.0f)));
+        verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]) - 1, rangex<element_type_t, false>(scf<32>(2.0f), scf<32>(1.0f), true, scf<32>(1.0f)));
 
         //behaviour under step is 0 is undefined
         //verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<32>(1.0f), scf<32>(2.0f), false, scf<32>(0.0f)));
@@ -346,8 +348,9 @@ TEST_CASE_EX(SkipTest, float128_cause_trouble) {
     GTEST_SKIP() << "Wait for better std::float128_t support";
     //using element_type_t = std::float128_t;
     using element_type_t = std::float64_t;
-    element_type_t expect[] = {};
+    // Compatability: MSVC can't create zero element, place a stub 0
+    element_type_t expect[] = { 0.0 };
     //#define float_bits 128
     #define float_bits 64
-    verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<float_bits>(1.0f), scf<float_bits>(2.0f), true, scf<float_bits>(0.5f)));
+    verify_for_loop_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]) - 1, rangex<element_type_t, false>(scf<float_bits>(1.0f), scf<float_bits>(2.0f), true, scf<float_bits>(0.5f)));
 }
