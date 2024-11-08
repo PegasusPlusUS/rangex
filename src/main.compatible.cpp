@@ -10,7 +10,7 @@
 using namespace ns_rangex;
 
 template <typename T>
-void verify_for_loop_range_detail(T expect[], size_t expect_len, rangex<T, false> r) {
+void verify_for_loop_range_detail(T expect[], size_t expect_len, rangex<T, false, true> r) {
     T sum = 0;
     size_t index = 0;
     for(auto v : r) {
@@ -25,11 +25,11 @@ void verify_for_loop_range_detail(T expect[], size_t expect_len, rangex<T, false
 TEST_CASE_EX(rangex_test, inclusive_range_downward_of_float_default_detail) {
     // float inclusive step -1
     // get 5...1 by -1
-    using element_type_t = std::float16_t;
-    element_type_t expect[] = {scf<16>(5.0f), scf<16>(4.0f), scf<16>(3.0f), scf<16>(2.0f), scf<16>(1.0f)};
-    verify_for_loop_range_detail<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false>(scf<16>(5.0f), scf<16>(1.0f), true, scf<16>(-1.0f)));
+    using element_type_t = std::float32_t;
+    #define element_type_bits 32
+    element_type_t expect[] = {scf<element_type_bits>(5.0f), scf<element_type_bits>(4.0f), scf<element_type_bits>(3.0f), scf<element_type_bits>(2.0f), scf<element_type_bits>(1.0f)};
+    verify_for_loop_range_detail<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, false, true>(scf<element_type_bits>(5.0f), scf<element_type_bits>(1.0f), true, scf<element_type_bits>(-1.0f)));
 }
-
 
 // Failed on Ubuntu-latest on GitHub
 // [  FAILED  ] 3 tests, listed below:

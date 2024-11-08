@@ -4,6 +4,7 @@
 using namespace ns_type_helper;
 
 #include <variant>
+#include <iostream>
 
 namespace ns_rangex {
 
@@ -24,7 +25,7 @@ namespace ns_rangex {
 /// 
 ///```
 
-template <typename T = int, bool IncludeIndex = false>
+template <typename T = int, bool IncludeIndex = false, bool DebugPrint = false>
 class rangex {
 public:
 using signed_step_type_t = make_signed_custom_t<T>;
@@ -93,7 +94,9 @@ using signed_step_type_t = make_signed_custom_t<T>;
             T rangex_size = end_ - start;
             T num_steps;
             bool exactly_on_step = std_div_exact(rangex_size, step, num_steps);
-
+            if constexpr (DebugPrint) {
+                std::cout << "Range size:" << rangex_size << " num steps:" << num_steps << " on step:" << exactly_on_step << std::endl;
+            }
             // Align `end` based on last multiple of `step` in rangex
             this->_end = start + (num_steps * step);
             if (!exactly_on_step) {
@@ -102,6 +105,10 @@ using signed_step_type_t = make_signed_custom_t<T>;
             // If inclusive, add one more `step` to include the endpoint
             if (inclusive && exactly_on_step) {
                 this->_end += step;
+            }
+
+            if constexpr (DebugPrint) {
+                std::cout << "Start:" << start << " end:" << _end << std::endl;
             }
         }
     };

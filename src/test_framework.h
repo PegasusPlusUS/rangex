@@ -14,11 +14,12 @@ void do_nothing (bool) {}
 #define TEST_CASE_EX(ts, name) fn ts#name()
 #define CHECK(exp) do_nothing(exp)
 
+#ifdef TEST_FRAMEWORK_IMPLEMENT_WITH_MAIN
 int main(int argc, char **argv) {
     //::testing::InitGoogleTest(&argc, argv);
     //return RUN_ALL_TESTS();
 }
-
+#endif
 #endif
 
 #ifdef USE_GOOGLE_TEST
@@ -28,15 +29,19 @@ int main(int argc, char **argv) {
 #define CHECK_EQ(val1, val2) EXPECT_EQ(val1, val2)
 #define CHECK_NE(val1, val2) EXPECT_NE(val1, val2)
 #include <gtest/gtest.h>
+#ifdef TEST_FRAMEWORK_IMPLEMENT_WITH_MAIN
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
 #endif
+#endif
 
 #ifdef USE_DOC_TEST
 #include <doctest/doctest.h>
+#ifdef TEST_FRAMEWORK_IMPLEMENT_WITH_MAIN
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#endif
 #define TEST_CASE_EX(ts, name) TEST_CASE(#name)
 //#define CHECK_EQ(val1, val2) CHECK(val1 == val2)
 //#define CHECK_NE(val1, val2) CHECK(val1 != val2)

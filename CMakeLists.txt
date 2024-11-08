@@ -4,6 +4,12 @@ cmake_minimum_required(VERSION 3.20)
 # Set the project name and version
 project(rangex_test VERSION 0.3 LANGUAGES CXX)
 
+# Specify which compiler will be Use
+#set(CMAKE_C_COMPILER "/usr/bin/gcc")
+#set(CMAKE_CXX_COMPILER "/usr/bin/g++")
+#set(CMAKE_C_COMPILER "/usr/bin/clang")
+#set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
+
 set(USE_CPP_STD 23)
 message(STATUS "Using C++${USE_CPP_STD}")
 # Specify the C++ standard
@@ -50,6 +56,7 @@ endif()
 # Specify the source files
 set(SOURCES
     src/main.cpp
+    src/main.compatible.cpp
 )
 # Create the executable target
 add_executable(rangex_test ${SOURCES})

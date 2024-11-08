@@ -1,3 +1,4 @@
+#define TEST_FRAMEWORK_IMPLEMENT_WITH_MAIN
 #include "test_framework.h"
 
 #include <iostream>
