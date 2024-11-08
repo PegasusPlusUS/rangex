@@ -45,13 +45,23 @@ void printCompilerInfo() {
 
 } // ns_type_helper
 
-// Define a macro based on the constexpr function result
-constexpr bool hasNoStdFloat = !ns_type_helper::checkCompilerHasStdFloat();
-#if hasNoStdFloat
-    #define has_no_std_float
+#if _HAS_CXX23
+    #ifdef __clang__
+        #if (__clang_major__ * 10000 + __clang_minor__ * 100 + __clang_patchlevel__) >= 140000
+        #define COMPILER_HAS_STD_FLOAT
+        #endif
+    #elif defined(__GNUC__) || defined(__GNUG__)
+        #if (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__) >= 130000
+        #define COMPILER_HAS_STD_FLOAT
+        #endif
+    #elif defined(_MSC_VER)
+        #if _MSC_VER >= 1932
+        #define COMPILER_HAS_STD_FLOAT
+        #endif
+    #endif
 #endif
 
-#ifdef has_no_std_float
+#ifdef COMPILER_HAS_STD_FLOAT
 namespace std {
     using float16_t = std::uint16_t;    // 16 bit float need half_float or Eigen support
     using float32_t = float;
@@ -110,7 +120,7 @@ struct make_signed_custom<int64_t> {
     using type = int64_t;
 };
 
-#ifdef has_no_std_float
+#ifdef COMPILER_HAS_STD_FLOAT
 template <>
 struct make_signed_custom<float> {
     using type = float;

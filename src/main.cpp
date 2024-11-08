@@ -15,8 +15,8 @@ TEST_CASE_EX(rangex_test, show_compiler_info) {
     printCompilerInfo();
 
     std::cout << "Compiler " << (checkCompilerHasStdFloat() ? "HAS" : "has NO") << " stdfloat support." << std::endl;
-    std::cout << "has_no_std_flaot " 
-#ifdef has_no_std_float
+    std::cout << "COMPILER_HAS_STD_FLOAT " 
+#ifdef COMPILER_HAS_STD_FLOAT
     << ""
 #else
     << " NOT "

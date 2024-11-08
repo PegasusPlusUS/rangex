@@ -9,13 +9,13 @@ using namespace ns_rangex;
 int main() {
     printCompilerInfo();
     std::cout << "Compiler " << (checkCompilerHasStdFloat() ? "HAS" : "has NO") << " stdfloat support." << std::endl;
-    std::cout << "has_no_std_flaot " 
-#ifdef has_no_std_float
-    << ""
+    std::cout << "COMPILER_HAS_STD_FLOAT " 
+#ifdef COMPILER_HAS_STD_FLOAT
+    << " "
 #else
-    << " NOT "
+    << "NOT "
 #endif
-    << "defined." << std::endl;
+    << "defined." << std::endl << std::endl;
 
     std::uint16_t sum = 0;
     rangex<std::uint8_t> r = rangex<std::uint8_t>(1, 100, true);
