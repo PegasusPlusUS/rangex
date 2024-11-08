@@ -51,11 +51,12 @@ TEST_CASE_EX(rangex_test, default_exclusive_range_of_float) {
     // default rangex<int, false> as normal exclusive loop at step 1
     // get 1...5
 
-    using element_type_t = std::float16_t;
-    element_type_t sum = scf<16>(0.0f);
-    element_type_t expect[] = {scf<16>(1.0f), scf<16>(2.0f), scf<16>(3.0f), scf<16>(4.0f), scf<16>(5.0f)};
+    using element_type_t = std::float32_t;
+    constexpr int element_type_bits = 32;
+    element_type_t sum = scf<element_type_bits>(0.0f);
+    element_type_t expect[] = {scf<element_type_bits>(1.0f), scf<element_type_bits>(2.0f), scf<element_type_bits>(3.0f), scf<element_type_bits>(4.0f), scf<element_type_bits>(5.0f)};
     size_t index = 0;
-    for(auto v : rangex<element_type_t, false>(scf<16>(1.0f), scf<16>(6.0f))) {
+    for(auto v : rangex<element_type_t, false>(scf<element_type_bits>(1.0f), scf<element_type_bits>(6.0f))) {
         static_assert(check_eq_typeof<decltype(v), element_type_t>());
         sum += v;
         CHECK(index < sizeof(expect)/sizeof(expect[0]));
@@ -63,7 +64,7 @@ TEST_CASE_EX(rangex_test, default_exclusive_range_of_float) {
         //std::cout << v << " ";
     }
     CHECK_EQ(index, sizeof(expect)/sizeof(expect[0]));
-    CHECK_EQ(sum, scf<16>(1.0f) + scf<16>(2.0f) + scf<16>(3.0) + scf<16>(4.0) + scf<16>(5.0));
+    CHECK_EQ(sum, scf<element_type_bits>(1.0f) + scf<element_type_bits>(2.0f) + scf<element_type_bits>(3.0) + scf<element_type_bits>(4.0) + scf<element_type_bits>(5.0));
     //std::cout << std::endl;
 }
 
@@ -91,11 +92,12 @@ TEST_CASE_EX(rangex_test, inclusive_range_of_float) {
     // float inclusive step 1
     // get 1...5
 
-    using element_type_t = std::float16_t;
-    element_type_t sum = scf<16>(0.0f);
-    element_type_t expect[] = {scf<16>(1.0f), scf<16>(2.0f), scf<16>(3.0f), scf<16>(4.0f), scf<16>(5.0f)};
+    using element_type_t = std::float32_t;
+    constexpr int element_type_bits = 32;
+    element_type_t sum = scf<element_type_bits>(0.0f);
+    element_type_t expect[] = {scf<element_type_bits>(1.0f), scf<element_type_bits>(2.0f), scf<element_type_bits>(3.0f), scf<element_type_bits>(4.0f), scf<element_type_bits>(5.0f)};
     size_t index = 0;
-    for(auto v : rangex<element_type_t, false>(scf<16>(1), scf<16>(5), true)) {
+    for(auto v : rangex<element_type_t, false>(scf<element_type_bits>(1), scf<element_type_bits>(5), true)) {
         static_assert(check_eq_typeof<decltype(v), element_type_t>());
         sum += v;
         CHECK(index < 5);
@@ -103,7 +105,7 @@ TEST_CASE_EX(rangex_test, inclusive_range_of_float) {
         //std::cout << v << " ";
     }
     CHECK(index == 5);
-    CHECK(sum == scf<16>(1.0f) + scf<16>(2.0f) + scf<16>(3.0f) + scf<16>(4.0f) + scf<16>(5.0f));
+    CHECK(sum == scf<element_type_bits>(1.0f) + scf<element_type_bits>(2.0f) + scf<element_type_bits>(3.0f) + scf<element_type_bits>(4.0f) + scf<element_type_bits>(5.0f));
     //std::cout << std::endl;
 }
 
@@ -247,16 +249,16 @@ TEST_CASE_EX(rangex_test, inclusive_indexed_range_downward_of_typename_uint8_t) 
     //std::cout << std::endl;
 }
 
-#ifndef COMPILER_HAS_STD_FLOAT
+#if !defined( COMPILER_HAS_STD_FLOAT ) || defined (COMPILER_HAS_NO_STD_FLOAT)
 TEST_CASE_EX(SkipTest, inclusive_indexed_range_downward_of_typename_float16_t) {
     GTEST_SKIP() << "Wait half float support std::float16_t";
     // uint8_t inclusive step -1
     // get 5...1
 
-    using element_type_t = std::float16_t;
-    constexpr int element_type_bits = 16;
-    element_type_t expect[] = {scf<element_type_bits>(5.0f), scf<element_type_bits>(4.0f), scf<element_type_bits>(3.0f), scf<element_type_bits>(2.0f), scf<element_type_bits>(1.0f)};
-    verify_for_loop_indexed_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, true>(scf<element_type_bits>(5.0f), scf<element_type_bits>(1.0f), true, scf<element_type_bits>(-1.0f)));
+    // using element_type_t = std::float16_t;
+    // constexpr int element_type_bits = 16;
+    // element_type_t expect[] = {scf<element_type_bits>(5.0f), scf<element_type_bits>(4.0f), scf<element_type_bits>(3.0f), scf<element_type_bits>(2.0f), scf<element_type_bits>(1.0f)};
+    // verify_for_loop_indexed_range<element_type_t>(expect, sizeof(expect)/sizeof(expect[0]), rangex<element_type_t, true>(scf<element_type_bits>(5.0f), scf<element_type_bits>(1.0f), true, scf<element_type_bits>(-1.0f)));
 }
 #else
 TEST_CASE_EX(rangex_test, inclusive_indexed_range_downward_of_typename_float16_t) {

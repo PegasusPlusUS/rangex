@@ -164,6 +164,20 @@ struct make_signed_custom<std::bfloat16_t> {
 template <int Bits>
 struct FloatType;
 
+#if !defined( COMPILER_HAS_STD_FLOAT ) || defined (COMPILER_HAS_NO_STD_FLOAT)
+template <>
+struct FloatType<32> {
+    using type = float;
+};
+template <>
+struct FloatType<64> {
+    using type = double;
+};
+template <>
+struct FloatType<128> {
+    using type = long double;
+};
+#else
 template <>
 struct FloatType<16> {
     using type = std::float16_t;
@@ -176,11 +190,12 @@ template <>
 struct FloatType<64> {
     using type = std::float64_t;
 };
-#ifdef is_float128_stable
+#ifdef IS_FLOAT128_STABLE
 template <>
 struct FloatType<128> {
     using type = std::float128_t;
 };
+#endif
 #endif
 
 // Helper function to perform static casting
@@ -188,23 +203,6 @@ template <int Bits, typename U>
 auto scf(U value) -> typename FloatType<Bits>::type {
     return static_cast<typename FloatType<Bits>::type>(value);
 }
-
-// int main() {
-//     float value = 1.0f;
-
-//     // Perform the static cast using the helper function with 16 bits
-//     auto casted_value_16 = scf<16>(value);
-
-//     // Perform the static cast using the helper function with 32 bits
-//     auto casted_value_32 = scf<32>(value);
-
-//     // Print the casted values (cast back to float for printing)
-//     std::cout << "Original value: " << value << std::endl;
-//     std::cout << "Casted value (16 bits): " << static_cast<float>(casted_value_16) << std::endl;
-//     std::cout << "Casted value (32 bits): " << casted_value_32 << std::endl;
-
-//     return 0;
-// }
 
 // Convenience alias template
 template <typename T>
@@ -215,7 +213,6 @@ template <typename T, typename U>
 constexpr bool check_eq_typeof() {
     return std::is_same<T, U>::value;
 }
-
 
 // // Example usage
 // static_assert(check_eq_typeof<decltype(v), float>());
