@@ -1,0 +1,39 @@
+# Template C++ Application
+
+# This template allows you to validate your C++ application.
+# The workflow allows running tests and code linting on the default branch.
+
+
+image: gcc:10.2
+definitions:
+  services:
+    docker:
+      memory: 2048
+pipelines:
+  default:
+    - parallel:
+        - step:
+            name: Test
+            script:
+              - .build/rangex_test
+        - step:
+            name: Lint
+            script:
+              # apt update && apt -y install cppcheck && cppcheck .
+              - echo OK make lint
+        - step:
+            name: Build and Run
+            image: rikorose/gcc-cmake
+            script:
+              - git submodule update --recursive --init
+              - apt-get update && apt-get install -y --no-install-recommends uuid-dev libssl-dev libz-dev libzmq5 libzmq3-dev
+              - mkdir _bld && cd _bld
+              - cmake -DCMAKE_BUILD_TYPE=Debug ..
+              - make -j10
+            caches:
+              - docker
+            artifacts:
+              - _bld/rangex_test
+              # Execute your C++ application after compilation to check success
+            services:
+              - docker
