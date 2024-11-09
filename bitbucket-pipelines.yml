@@ -8,7 +8,7 @@ image: gcc:10.2
 definitions:
   services:
     docker:
-      memory: 7128
+      memory: 2048
 pipelines:
   default:
     - parallel:
@@ -35,4 +35,5 @@ pipelines:
             artifacts:
               - _bld/rangex_test
               # Execute your C++ application after compilation to check success
-              - 
+            services:
+              - docker
