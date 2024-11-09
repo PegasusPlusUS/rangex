@@ -15,7 +15,7 @@ pipelines:
         - step:
             name: Test
             script:
-              - .build/rangex_test
+              - _bld/rangex_test
         - step:
             name: Lint
             script:
