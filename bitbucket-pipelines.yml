@@ -13,7 +13,7 @@ pipelines:
   default:
 #    - parallel:
         - step:
-            name: Build and Run
+            name: Build and test Run
             image: rikorose/gcc-cmake
             script:
               - git submodule update --recursive --init
@@ -23,6 +23,7 @@ pipelines:
               - make -j10
               - ./rangex_test
               - ./rangex_demo
+              - ctest --test-dir .
             caches:
               - docker
             artifacts:
@@ -35,7 +36,7 @@ pipelines:
             script:
               - apt update && apt -y install cppcheck && cppcheck .
               - echo OK make lint
-        - step:
-            name: Test
-            script:
-              - ctest --test-dir _bld/
+#        - step:
+#            name: Test
+#            script:
+#              - ctest --test-dir _bld/
