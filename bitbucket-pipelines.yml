@@ -11,7 +11,7 @@ definitions:
       memory: 2048
 pipelines:
   default:
-    - sequential:
+#    - parallel:
         - step:
             name: Test
             script:
