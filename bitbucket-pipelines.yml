@@ -21,9 +21,9 @@ pipelines:
               - mkdir _bld && cd _bld
               - cmake -DCMAKE_BUILD_TYPE=Debug ..
               - make -j10
-              - ./rangex_test
+#              - ./rangex_test
               - ./rangex_demo
-              - ctest --test-dir .
+              - ctest --test-dir . --output-on-failure
             caches:
               - docker
             artifacts:
