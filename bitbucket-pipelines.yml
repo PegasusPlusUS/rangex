@@ -13,15 +13,6 @@ pipelines:
   default:
 #    - parallel:
         - step:
-            name: Test
-            script:
-              - _bld/rangex_test
-        - step:
-            name: Lint
-            script:
-              # apt update && apt -y install cppcheck && cppcheck .
-              - echo OK make lint
-        - step:
             name: Build and Run
             image: rikorose/gcc-cmake
             script:
@@ -37,3 +28,12 @@ pipelines:
               # Execute your C++ application after compilation to check success
             services:
               - docker
+        - step:
+            name: Lint
+            script:
+              # apt update && apt -y install cppcheck && cppcheck .
+              - echo OK make lint
+        - step:
+            name: Test
+            script:
+              - _bld/rangex_test
