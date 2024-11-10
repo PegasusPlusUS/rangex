@@ -1,0 +1,64 @@
+# 快速开始
+
+# - 增加 CI 配置文件：
+# 1. 在项目根目录中增加 .coding-ci.yml 配置文件。
+# 2. 其描述了当仓库发生一些事件时，Coding-CI 应该如何去进行处理。
+# 3. 将配置文件 push 到远程 master
+
+# 想了解配置文件更多用法请移步 【配置文件】（https://ci.coding.net/docs/configuration.html）
+
+master:
+  push:
+    - stages:
+      - name: echo
+        script: echo "hello world"
+      - name: echo2
+        script: echo "hello world2"
+# Template C++ Application
+
+# This template allows you to validate your C++ application.
+# The workflow allows running tests and code linting on the default branch.
+
+
+image: gcc:10.2
+definitions:
+  services:
+    docker:
+      memory: 2048
+pipelines:
+  default:
+#    - parallel:
+        - step:
+            name: Build and test Run
+            image: rikorose/gcc-cmake
+            script:
+              - git submodule update --recursive --init
+              - apt-get update && apt-get install -y --no-install-recommends uuid-dev libssl-dev libz-dev libzmq5 libzmq3-dev
+              - mkdir _bld && cd _bld
+              - cmake -DCMAKE_BUILD_TYPE=Debug ..
+              - make -j10
+#              - ./rangex_test
+              - ./rangex_demo
+              - ctest --test-dir . --output-on-failure
+            caches:
+              - docker
+            artifacts:
+              - _bld/rangex_test
+              # Execute your C++ application after compilation to check success
+            services:
+              - docker
+        - step:
+            name: Lint
+            script:
+              - apt update && apt -y install cppcheck && cppcheck .
+              - echo OK make lint
+#        - step:
+#            name: Test
+#            script:
+#              - ctest --test-dir _bld/
+
+
+# 这个案例描述的流程如下：
+
+# 1. 声明了在 master 分支在收到 push 事件时（即有新的 Commit 推送到 master 分支）的时候
+# 2. 依次执行任务 echo echo2 的script
