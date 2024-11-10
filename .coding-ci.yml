@@ -7,55 +7,66 @@
 
 # 想了解配置文件更多用法请移步 【配置文件】（https://ci.coding.net/docs/configuration.html）
 
-master:
+msin:
   push:
     - stages:
       - name: echo
         script: echo "hello world"
       - name: echo2
         script: echo "hello world2"
+      - name: Build and test Run
+        image: rikorose/gcc-cmake
+        script:
+          - git submodule update --recursive --init
+          - apt-get update && apt-get install -y --no-install-recommends uuid-dev libssl-dev libz-dev libzmq5 libzmq3-dev
+          - mkdir _bld && cd _bld
+          - cmake -DCMAKE_BUILD_TYPE=Debug ..
+          - make -j10
+#              - ./rangex_test
+          - ./rangex_demo
+          - ctest --test-dir . --output-on-failure
 # Template C++ Application
 
 # This template allows you to validate your C++ application.
 # The workflow allows running tests and code linting on the default branch.
 
 
-image: gcc:10.2
-definitions:
-  services:
-    docker:
-      memory: 2048
-pipelines:
-  default:
+#image: gcc:10.2
+#definitions:
+#  services:
+#    docker:
+#      memory: 2048
+#pipelines:
+#  default:
 #    - parallel:
-        - step:
-            name: Build and test Run
-            image: rikorose/gcc-cmake
-            script:
-              - git submodule update --recursive --init
-              - apt-get update && apt-get install -y --no-install-recommends uuid-dev libssl-dev libz-dev libzmq5 libzmq3-dev
-              - mkdir _bld && cd _bld
-              - cmake -DCMAKE_BUILD_TYPE=Debug ..
-              - make -j10
-#              - ./rangex_test
-              - ./rangex_demo
-              - ctest --test-dir . --output-on-failure
-            caches:
-              - docker
-            artifacts:
-              - _bld/rangex_test
-              # Execute your C++ application after compilation to check success
-            services:
-              - docker
-        - step:
-            name: Lint
-            script:
-              - apt update && apt -y install cppcheck && cppcheck .
-              - echo OK make lint
 #        - step:
-#            name: Test
-#            script:
-#              - ctest --test-dir _bld/
+#             name: Build and test Run
+#             image: rikorose/gcc-cmake
+#             script:
+#               - git submodule update --recursive --init
+#               - apt-get update && apt-get install -y --no-install-recommends uuid-dev libssl-dev libz-dev libzmq5 libzmq3-dev
+#               - mkdir _bld && cd _bld
+#               - cmake -DCMAKE_BUILD_TYPE=Debug ..
+#               - make -j10
+# #              - ./rangex_test
+#               - ./rangex_demo
+#               - ctest --test-dir . --output-on-failure
+#             caches:
+#               - docker
+#             artifacts:
+#               - _bld/rangex_test
+#               # Execute your C++ application after compilation to check success
+#             services:
+#               - docker
+#         - step:
+#             name: Lint
+#             script:
+#               - apt update && apt -y install cppcheck && cppcheck .
+#               - echo OK make lint
+# #        - step:
+# #            name: Test
+# #            script:
+# #              - ctest --test-dir _bld/
 
 
 # 这个案例描述的流程如下：
